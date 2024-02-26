@@ -1,0 +1,161 @@
+ select MId,Mname,Fine from MEMBERS inner join n on fine>0 and MemId=MId;
+ select title,Author,Max(Cost) from Book3;
+mysql> use w;
+Database changed
+mysql> select * from n;
++-------+---------+------------+------------+------+
+| MemId | Book_Id | Issue_Dt   | Return_dt  | Fine |
++-------+---------+------------+------------+------+
+|   701 |     101 | 2023-01-19 | 2023-02-07 |   20 |
+|   701 |     102 | 2023-02-07 | NULL       |    0 |
+|   702 |     103 | 2023-01-17 | 2023-01-30 |    0 |
+|   702 |     105 | 2023-02-06 | NULL       |    0 |
+|   702 |     107 | 2023-01-17 | 2023-01-27 |    0 |
+|   702 |     109 | 2023-01-30 | NULL       |    0 |
+|   703 |     104 | 2023-02-17 | NULL       |    0 |
+|   704 |     108 | 2023-01-30 | NULL       |    0 |
+|   705 |     104 | 2023-01-17 | 2023-01-25 |    0 |
+|   705 |     106 | 2023-01-17 | NULL       |    0 |
+|   706 |     101 | 2023-02-08 | 2023-02-20 |    0 |
+|   707 |     104 | 2023-01-27 | 2023-02-16 |   25 |
++-------+---------+------------+------------+------+
+12 rows in set (0.00 sec)
+
+mysql> select MId,Mname,Fine from MEMBERS inner join n on fine>0 and MemId=MId;
++-----+-----------------+------+
+| MId | Mname           | Fine |
++-----+-----------------+------+
+| 701 | CHAVAN AARTI    |   20 |
+| 707 | Khilari Anushka |   25 |
++-----+-----------------+------+
+2 rows in set (0.00 sec)
+
+mysql> alter table Book3 add column Cost int;
+ERROR 1060 (42S21): Duplicate column name 'Cost'
+mysql> select * from Bok3;
+ERROR 1146 (42S02): Table 'w.bok3' doesn't exist
+mysql> select * from Book3;
++--------+----------------------------------------------------------------+--------------------------------------+--------------+---------+------------+------+
+| BookId | title                                                          | Author                               | publication  | Edition | DOP        | Cost |
++--------+----------------------------------------------------------------+--------------------------------------+--------------+---------+------------+------+
+|    101 |  Human Values                                                  |  Tripathi A.N.                       | McGraw Hill  |       3 | 2003-03-11 |  750 |
+|    102 | Human Values and Professional Ethics                           | Suresh.J.Raghavan                    | Pearson      |       1 | 2001-08-10 | 1500 |
+|    103 | Human Intelligence                                             |  Hunt E.                             |  McGraw Hill |       1 | 2015-07-15 | 1200 |
+|    104 | Human Side of Organizations                                    | Drafke M.                            |  McGraw Hill |       1 | 2001-02-17 |  550 |
+|    105 | Programming Languages Concepts and Constructs                  | Sethi R.                             |  Pearson     |       3 | 2001-07-16 |  700 |
+|    106 | Structure and Interpretation of Computer Programs              | Harold Abelson,Sussman.G.J,Sussman J |  Pearson     |       3 | 2001-07-16 | 1500 |
+|    107 | Foundations of Programming Languages:Design and Implementation | Roosta.S                             | Pearson      |       2 | 2001-01-17 | 1000 |
+|    108 | Concepts of Programming Languages                              | Sebesta R                            |  McGraw Hill |       3 | 2001-07-20 |  950 |
+|    109 | Programming Languages:Principles and Paradigms                 | Allen Tucker,Robert Noonan           | McGraw Hill  |       3 | 2001-12-22 |  300 |
+|    110 | Programming Language and Concepts                              | Carlo Ghezhi,Mehdi Jazayeri          | Pearson      |       6 | 2001-01-12 |  600 |
++--------+----------------------------------------------------------------+--------------------------------------+--------------+---------+------------+------+
+10 rows in set (0.00 sec)
+
+mysql> select title,Author,Max(Cost) from Book3;
++---------------+----------------+-----------+
+| title         | Author         | Max(Cost) |
++---------------+----------------+-----------+
+|  Human Values |  Tripathi A.N. |      1500 |
++---------------+----------------+-----------+
+1 row in set (0.03 sec)
+
+mysql> select title from Book3 where Cost=(select cost from Book3 where Bookname='Human Values and Professional Ethics');
+ERROR 1054 (42S22): Unknown column 'Bookname' in 'where clause'
+mysql> select title from Book3 where Cost=(select cost from Book3 where title='Human Values and Professional Ethics');
++---------------------------------------------------+
+| title                                             |
++---------------------------------------------------+
+| Human Values and Professional Ethics              |
+| Structure and Interpretation of Computer Programs |
++---------------------------------------------------+
+2 rows in set (0.00 sec)
+mysql> select title,author,publication from Book3 where cost>avg(cost);
+ERROR 1111 (HY000): Invalid use of group function
+mysql>  select title,author,publication from Book3 where cost>(select avg(cost) fro Book3);
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'Book3)' at line 1
+mysql>  select title,author,publication from Book3 where cost>(select avg(cost) from Book3);
++----------------------------------------------------------------+--------------------------------------+--------------+
+| title                                                          | author                               | publication  |
++----------------------------------------------------------------+--------------------------------------+--------------+
+| Human Values and Professional Ethics                           | Suresh.J.Raghavan                    | Pearson      |
+| Human Intelligence                                             |  Hunt E.                             |  McGraw Hill |
+| Structure and Interpretation of Computer Programs              | Harold Abelson,Sussman.G.J,Sussman J |  Pearson     |
+| Foundations of Programming Languages:Design and Implementation | Roosta.S                             | Pearson      |
+| Concepts of Programming Languages                              | Sebesta R                            |  McGraw Hill |
++----------------------------------------------------------------+--------------------------------------+--------------+
+mysql>  select title,author,publication from Book3 where cost>(select avg(cost) from Book3);
++----------------------------------------------------------------+--------------------------------------+--------------+
+| title                                                          | author                               | publication  |
++----------------------------------------------------------------+--------------------------------------+--------------+
+| Human Values and Professional Ethics                           | Suresh.J.Raghavan                    | Pearson      |
+| Human Intelligence                                             |  Hunt E.                             |  McGraw Hill |
+| Structure and Interpretation of Computer Programs              | Harold Abelson,Sussman.G.J,Sussman J |  Pearson     |
+| Foundations of Programming Languages:Design and Implementation | Roosta.S                             | Pearson      |
+| Concepts of Programming Languages                              | Sebesta R                            |  McGraw Hill |
++----------------------------------------------------------------+--------------------------------------+--------------+
+5 rows in set (0.03 sec)
+
+mysql> select Mname,MId from MEMBERS inner join n on issue_dt is NULL;
+Empty set (0.00 sec)
+mysql>  select Members.MID,Members.Mname from MEMBERS LEFT OUTER JOIN n on Members.MId=n.MemId;
++-----+-----------------+
+| MID | Mname           |
++-----+-----------------+
+| 701 | CHAVAN AARTI    |
+| 701 | CHAVAN AARTI    |
+| 702 |  KATE MADHURA   |
+| 702 |  KATE MADHURA   |
+| 702 |  KATE MADHURA   |
+| 702 |  KATE MADHURA   |
+| 703 |  PATIL MRUNAL   |
+| 704 | Mandlik Shivani |
+| 705 |  MANSI MALPANI  |
+| 705 |  MANSI MALPANI  |
+| 706 |  RUTUJA DUBE    |
+| 707 | Khilari Anushka |
++-----+-----------------+
+12 rows in set (0.00 sec)
+
+mysql> select MId,Mname,Address,Phno,department from Members left outer join n;
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near '' at line 1
+mysql>  select MId,Mname,Address,Phno,department from Members left outer join n on MId=MemId;
++-----+-----------------+--------------------+---------------+------------+
+| MId | Mname           | Address            | Phno          | department |
++-----+-----------------+--------------------+---------------+------------+
+| 701 | CHAVAN AARTI    |  Kothrud, Pune     | 9856745323    | Comp       |
+| 701 | CHAVAN AARTI    |  Kothrud, Pune     | 9856745323    | Comp       |
+| 702 |  KATE MADHURA   |  Karve Nagar, Pune | 9850335412    | E & TC     |
+| 702 |  KATE MADHURA   |  Karve Nagar, Pune | 9850335412    | E & TC     |
+| 702 |  KATE MADHURA   |  Karve Nagar, Pune | 9850335412    | E & TC     |
+| 702 |  KATE MADHURA   |  Karve Nagar, Pune | 9850335412    | E & TC     |
+| 703 |  PATIL MRUNAL   |  Vanaz, Pune       | 9860951320033 | Comp       |
+| 704 | Mandlik Shivani | Karvenagar         | 9856743299    | Comp       |
+| 705 |  MANSI MALPANI  |  SB Road, Pune     | 7756439877    | IT         |
+| 705 |  MANSI MALPANI  |  SB Road, Pune     | 7756439877    | IT         |
+| 706 |  RUTUJA DUBE    |  Kondwa, Pune      | 9895906512    | E & TC     |
+| 707 | Khilari Anushka | Akurdi             | 8734592388    | IT         |
++-----+-----------------+--------------------+---------------+------------+
+12 rows in set (0.00 sec)
+
+mysql>  select MemId,BookId,issue_dt,return_dt,fine from Members left outer join n o MemId=MId;
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'MemId=MId' at line 1
+mysql>  select MemId,BookId,issue_dt,return_dt,fine from Members right outer join n on MemId=MId;
+ERROR 1054 (42S22): Unknown column 'BookId' in 'field list'
+mysql> select MemId,Book_Id,issue_dt,return_dt,fine from Members right outer join n on MemId=MId;
++-------+---------+------------+------------+------+
+| MemId | Book_Id | issue_dt   | return_dt  | fine |
++-------+---------+------------+------------+------+
+|   701 |     101 | 2023-01-19 | 2023-02-07 |   20 |
+|   701 |     102 | 2023-02-07 | NULL       |    0 |
+|   702 |     103 | 2023-01-17 | 2023-01-30 |    0 |
+|   702 |     105 | 2023-02-06 | NULL       |    0 |
+|   702 |     107 | 2023-01-17 | 2023-01-27 |    0 |
+|   702 |     109 | 2023-01-30 | NULL       |    0 |
+|   703 |     104 | 2023-02-17 | NULL       |    0 |
+|   704 |     108 | 2023-01-30 | NULL       |    0 |
+|   705 |     104 | 2023-01-17 | 2023-01-25 |    0 |
+|   705 |     106 | 2023-01-17 | NULL       |    0 |
+|   706 |     101 | 2023-02-08 | 2023-02-20 |    0 |
+|   707 |     104 | 2023-01-27 | 2023-02-16 |   25 |
++-------+---------+------------+------------+------+
+12 rows in set (0.00 sec)
